@@ -2,23 +2,21 @@ package com.sokil.service.impl;
 
 
 import com.sokil.dao.IRoleDAO;
+import com.sokil.dto.UserDTO;
 import com.sokil.service.IRoleService;
 import com.sokil.utils.Util;
+import lombok.AllArgsConstructor;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.Set;
 
+@AllArgsConstructor
 public class RoleServiceImpl implements IRoleService {
     private IRoleDAO roleDao;
 
-    public RoleServiceImpl(IRoleDAO roleDao) {
-        this.roleDao = roleDao;
-    }
-
     @Override
-    public void saveRole(HttpServletRequest request) throws SQLException {
-        String userRoles = request.getParameter("role");
+    public void saveRole(UserDTO userDTO) throws SQLException {
+        String userRoles = userDTO.getRoles();
         Set<String> roles = Util.parseRoles(userRoles);
         for (String role: roles){
             roleDao.saveRole(role);

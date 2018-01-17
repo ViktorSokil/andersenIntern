@@ -4,120 +4,112 @@ package com.sokil.dao.impl;
 import com.sokil.dao.IUserDAO;
 import com.sokil.entity.User;
 import com.sokil.utils.Util;
+import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@AllArgsConstructor
 public class UserDAOImpl implements IUserDAO{
-    private PreparedStatement saveStatement;
-    private PreparedStatement updateStatment;
-    private PreparedStatement selectStatment;
-    private PreparedStatement saveBindingStatement;
-    private PreparedStatement selectUserIdStatement;
-    private PreparedStatement isPareExistStatement;
 
-    private Connection connection;
+    private JdbcTemplate jdbcTemplate;
 
-    public UserDAOImpl(Connection connection) throws SQLException{
-        this.connection = connection;
-
-        saveStatement = connection.prepareStatement(
-                "INSERT INTO users (user_name, user_password) VALUES (?, ?)");
-
-        saveBindingStatement = connection.prepareStatement("INSERT INTO users_roles (user_id, role_id) VALUES (?, ?)");
-
-        updateStatment = connection.prepareStatement("UPDATE users SET user_password = ?"+
-                " WHERE user_id = ?");
-
-        selectStatment = connection.prepareStatement(
-                "SELECT Users.user_id, users.user_name, roles.role\n" +
-                        "FROM users, roles, users_roles\n" +
-                        "WHERE users.user_id = users_roles.user_id AND \n" +
-                        "roles.role_id = users_roles.role_id\n" +
-                        "ORDER BY user_id;"
-        );
-
-        selectUserIdStatement = connection.prepareStatement(
-                "SELECT user_id FROM users WHERE user_name = ?");
-
-
-        isPareExistStatement = connection.prepareStatement("SELECT * FROM users_roles " +
-                "WHERE user_id = ? AND role_id = ?");
-    }
+    private static final String INSERT_USER = "INSERT INTO users (user_name, user_password) VALUES (?, ?)";
+    private static final String INSERT_USERS_ROLES = "INSERT INTO users_roles (user_id, role_id) VALUES (?, ?)";
+    private static final String UPDATE_USERS = "UPDATE users SET user_password = ? WHERE user_id = ?";
+    private static final String SELECT_USER = "SELECT Users.user_id, users.user_name, roles.role\n" +
+                                                "FROM users, roles, users_roles\n" +
+                                                "WHERE users.user_id = users_roles.user_id AND \n" +
+                                                "roles.role_id = users_roles.role_id\n" +
+                                                "ORDER BY user_id;";
+    private static final String SELECT_USER_ID = "SELECT user_id FROM users WHERE user_name = ";
 
     public void saveUser(User user) throws SQLException{
         Long userId = getUserId(user);
         if (userId == null) {
-            saveStatement.setString(1, user.getUserName());
-            saveStatement.setString(2, user.getUserPassword());
-            saveStatement.execute();
+            jdbcTemplate.update(INSERT_USER,
+                    user.getUserName(),
+                    user.getUserPassword());
         }else {
-            updateStatment.setString(1, user.getUserPassword());
-            updateStatment.setLong(2, userId);
-            updateStatment.executeUpdate();
+            jdbcTemplate.update(UPDATE_USERS,
+                    user.getUserPassword(),
+                    userId);
         }
 
         userId = getUserId(user);
         for (String role: user.getRoles()){
-            Long roleId = Util.getRoleId(role, connection);
+            Long roleId = Util.getRoleId(role, jdbcTemplate);
             if (!isPareExist(userId, roleId)){
-                saveBindingStatement.setLong(1, userId);
-                saveBindingStatement.setLong(2, roleId);
-                saveBindingStatement.executeUpdate();
+                jdbcTemplate.update(INSERT_USERS_ROLES,
+                        userId,
+                        roleId);
             }
         }
     }
 
     public List<User> getAllUsers() throws SQLException {
-        List<User> list = new ArrayList<>();
         Map<Long, User> map = new HashMap<>();
 
-        ResultSet rs = selectStatment.executeQuery();
-        while(rs.next()){
-            Long id  = rs.getLong("user_id");
-            String name = rs.getString("user_name");
-            String role = rs.getString("role");
-            Set<String> roles = new HashSet<>();
-            User user = new User();
-            if (!map.containsKey(id)){
-                user.setUserId(id);
-                user.setUserName(name);
-                roles.add(role);
+        List<User> list = jdbcTemplate.query(SELECT_USER, new RowMapper<User>() {
+
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setUserId(rs.getLong("user_id"));
+                user.setUserName(rs.getString("user_name"));
+                Set<String> roles = new HashSet<>();
+                roles.add(rs.getString("role"));
                 user.setRoles(roles);
-                map.put(id, user);
+                return user;
+            }
+        });
+
+        for (User user: list){
+            if (!map.containsKey(user.getUserId())){
+                map.put(user.getUserId(), user);
             }else {
-                user = map.get(id);
-                roles = user.getRoles();
-                roles.add(role);
+                User userInMap = map.get(user.getUserId());
+                Set<String> roles = userInMap.getRoles();
+                roles.addAll(user.getRoles());
                 user.setRoles(roles);
-                map.put(id, user);
+                map.put(user.getUserId(), user);
             }
         }
         list.addAll(map.values());
-        rs.close();
         return list;
     }
 
     private Long getUserId(User user) throws SQLException {
-        selectUserIdStatement.setString(1, user.getUserName());
-        ResultSet resultSet = selectUserIdStatement.executeQuery();
-        if (resultSet.next()){
-            return  resultSet.getLong(1);
-        }
-        resultSet.close();
-        return null;
+        return jdbcTemplate.query(
+                SELECT_USER_ID+"'"+user.getUserName()+"'", new ResultSetExtractor<Long>() {
+
+                    @Override
+                    public Long extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                        if (resultSet.next()) {
+                            return resultSet.getLong("user_id");
+                        }
+                        return null;
+                    }
+                });
     }
 
     private boolean isPareExist(Long userId, Long roleId) throws SQLException {
-        isPareExistStatement.setLong(1, userId);
-        isPareExistStatement.setLong(2, roleId);
-        ResultSet resultSet = isPareExistStatement.executeQuery();
-        if (resultSet.next()){
-            return true;
-        }
-        return false;
+        return jdbcTemplate.query(
+                "SELECT * FROM users_roles WHERE user_id = '"+userId+"' AND role_id = '"+roleId+"'"
+                , new ResultSetExtractor<Boolean>(){
+
+                    @Override
+                    public Boolean extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                        if(resultSet.next()){
+                            return true;
+                        }
+                        return false;
+                    }
+                });
     }
 }

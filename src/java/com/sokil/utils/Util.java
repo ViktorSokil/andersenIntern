@@ -1,8 +1,10 @@
 package com.sokil.utils;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -10,17 +12,19 @@ import java.util.Set;
 
 public class Util {
 
-    public static Long getRoleId(String role, Connection connection) throws SQLException {
-        PreparedStatement selectStatment = connection.prepareStatement(
-                "SELECT role_id FROM roles " +
-                        "WHERE role = ?");
-        selectStatment.setString(1, role);
-        ResultSet resultSet = selectStatment.executeQuery();
-        if (resultSet.next()){
-            return  resultSet.getLong(1);
-        }
-        resultSet.close();
-        return null;
+    public static Long getRoleId(String role, JdbcTemplate jdbcTemplate) throws SQLException {
+        String SELECT_ROLE_ID = "SELECT role_id FROM roles WHERE role = '" + role+"'";
+        return jdbcTemplate.query(
+                SELECT_ROLE_ID, new ResultSetExtractor<Long>() {
+
+                    @Override
+                    public Long extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                        if (resultSet.next()) {
+                            return resultSet.getLong("role_id");
+                        }
+                        return null;
+                    }
+                });
     }
 
     public static Set<String> parseRoles(String userRoles) {
