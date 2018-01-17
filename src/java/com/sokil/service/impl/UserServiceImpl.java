@@ -18,7 +18,7 @@ public class UserServiceImpl implements IUserService{
     @Override
     public void saveUser(UserDTO userDTO) throws SQLException {
         Set<String> roles = Util.parseRoles(userDTO.getRoles());
-        com.sokil.entity.User user = new com.sokil.entity.User();
+        User user = new User();
         user.setUserName(userDTO.getUserName());
         user.setUserPassword(userDTO.getUserPassword());
         user.setRoles(roles);
