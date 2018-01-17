@@ -5,14 +5,16 @@ import com.sokil.dto.UserDTO;
 import com.sokil.entity.User;
 import com.sokil.service.IUserService;
 import com.sokil.utils.Util;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-@AllArgsConstructor
+@Service("userService")
 public class UserServiceImpl implements IUserService{
+    @Autowired
     private IUserDAO userDAO;
 
     @Override
@@ -29,6 +31,4 @@ public class UserServiceImpl implements IUserService{
         List<User> users = userDAO.getAllUsers();
         return users;
     }
-
-
 }

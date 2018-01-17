@@ -5,13 +5,15 @@ import com.sokil.dao.IRoleDAO;
 import com.sokil.dto.UserDTO;
 import com.sokil.service.IRoleService;
 import com.sokil.utils.Util;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.Set;
 
-@AllArgsConstructor
+@Service("roleService")
 public class RoleServiceImpl implements IRoleService {
+    @Autowired
     private IRoleDAO roleDao;
 
     @Override

@@ -4,19 +4,20 @@ package com.sokil.dao.impl;
 import com.sokil.dao.IUserDAO;
 import com.sokil.entity.User;
 import com.sokil.utils.Util;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-@AllArgsConstructor
+@Repository("userDAO")
 public class UserDAOImpl implements IUserDAO{
-
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private static final String INSERT_USER = "INSERT INTO users (user_name, user_password) VALUES (?, ?)";

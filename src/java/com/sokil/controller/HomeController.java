@@ -3,9 +3,8 @@ package com.sokil.controller;
 import com.sokil.dto.UserDTO;
 import com.sokil.service.IRoleService;
 import com.sokil.service.IUserService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,12 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.sql.SQLException;
 
 @Log4j
-@NoArgsConstructor
-@AllArgsConstructor
 @Controller
 public class HomeController {
-
+    @Autowired
     private IUserService userService;
+    @Autowired
     private IRoleService roleService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
