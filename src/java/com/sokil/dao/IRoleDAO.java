@@ -1,8 +1,8 @@
 package com.sokil.dao;
 
-import java.sql.SQLException;
+import com.sokil.entity.Role;
 
 
 public interface IRoleDAO {
-    void saveRole(String role) throws SQLException;
+    void saveRole(Role role);
 }

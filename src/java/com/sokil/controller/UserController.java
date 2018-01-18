@@ -1,38 +1,51 @@
 package com.sokil.controller;
 
+import com.sokil.dto.UserDTO;
+import com.sokil.entity.Role;
 import com.sokil.entity.User;
 import com.sokil.service.IUserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
-@Log4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
     @RequestMapping(value = "/allusers")
-    public ModelAndView listUsers(){
-        List<User> list = null;
-        try {
-            list = userService.getAllUsers();
-        } catch (SQLException e) {
-            log.error("UserController.insertUser() :" + e.getMessage());
+    public List<UserDTO> listUsers(){
+        return userDTOList(userService.getAllUsers());
+    }
+
+    private UserDTO parseToUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(user.getUserId());
+        userDTO.setUserName(user.getUserName());
+        StringBuilder roles = new StringBuilder();
+        for (Role role: user.getRoles()){
+            roles.append(role.getRole()).append(", ");
         }
-        final ModelAndView modelAndView =
-                new ModelAndView("user-page", "list", list);
-        return modelAndView;
+        userDTO.setRoles(roles.toString());
+        return userDTO;
+    }
+
+    private List<UserDTO> userDTOList(List<User> users){
+        List<UserDTO> userDTOS = new ArrayList<>();
+        for (User user: users){
+            userDTOS.add(parseToUserDTO(user));
+        }
+        return userDTOS;
     }
 }

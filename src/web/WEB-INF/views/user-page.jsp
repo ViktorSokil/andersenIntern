@@ -34,4 +34,4 @@
         </table>
     </div>
     <br/>
-    <a href="registration">Add New User</a>
+    <a href="/">Add New User</a>

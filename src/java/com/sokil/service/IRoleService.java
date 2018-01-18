@@ -1,9 +1,7 @@
 package com.sokil.service;
 
-import com.sokil.dto.UserDTO;
-
-import java.sql.SQLException;
+import com.sokil.entity.Role;
 
 public interface IRoleService {
-    void saveRole(UserDTO user) throws SQLException;
+    void saveRole(Role user);
 }
