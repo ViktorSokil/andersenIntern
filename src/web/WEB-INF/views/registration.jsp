@@ -26,6 +26,7 @@
 
         <div>
             <a href = "/allusers">All Users</a>
+            <a href = "/personregpage">Person Registration Page</a>
         </div>
     </div>
 </body>
