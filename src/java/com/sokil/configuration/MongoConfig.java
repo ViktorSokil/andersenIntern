@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 @ComponentScan(basePackages = "com.sokil")
 public class MongoConfig {
     private static final String URI = "mongodb+srv://viksokil:270487@viktorclaster-uioz9.mongodb.net/test";
-    private static final String DB_NAME = "users";
+    private static final String DB_NAME = "persons";
 
     @Bean
     public MongoClientURI mongoClientURI(){

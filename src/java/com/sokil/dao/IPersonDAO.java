@@ -3,13 +3,19 @@ package com.sokil.dao;
 
 import com.sokil.dto.PersonDTO;
 
+import java.util.List;
+
 public interface IPersonDAO {
 
-	public void create(PersonDTO p);
+	void create(PersonDTO p);
 	
-	public PersonDTO readById(String id);
+	PersonDTO readById(String id);
 	
-	public void update(PersonDTO p);
+	void update(PersonDTO p);
 	
-	public int deleteById(String id);
+	int deleteById(String id);
+
+	List<PersonDTO> getAll();
+
+	void remove(Long id);
 }

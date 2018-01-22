@@ -27,6 +27,7 @@
         <div>
             <a href = "/allusers">All Users</a>
             <a href = "/personregpage">Person Registration Page</a>
+            <a href = "/random-page">Page With Random Fields</a>
         </div>
     </div>
 </body>
