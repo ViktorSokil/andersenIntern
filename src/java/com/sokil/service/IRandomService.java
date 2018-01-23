@@ -1,8 +1,10 @@
 package com.sokil.service;
 
 
-import java.util.Map;
+import org.bson.Document;
 
 public interface IRandomService {
-    void save(Map<String, String> randomMap);
+    void save(Document document);
+
+
 }

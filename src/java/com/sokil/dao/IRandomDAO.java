@@ -1,8 +1,8 @@
 package com.sokil.dao;
 
 
-import java.util.Map;
+import org.bson.Document;
 
 public interface IRandomDAO {
-    void create(Map<String, String> randomMap);
+    void create(Document document);
 }
