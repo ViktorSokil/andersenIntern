@@ -16,7 +16,8 @@
                 function random(i) {
                     var element = document.getElementById('form');
                     var input = document.createElement('input')
-                    input.setAttribute("path", i);
+                    input.setAttribute("type", "text");
+                    input.setAttribute("name", i);
                     var br = document.createElement('br');
                     var fragment = document.createDocumentFragment();
                     fragment.appendChild(input);
