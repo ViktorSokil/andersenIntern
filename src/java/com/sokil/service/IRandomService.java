@@ -1,10 +1,10 @@
 package com.sokil.service;
 
 
-import org.bson.Document;
+import javax.servlet.http.HttpServletRequest;
 
 public interface IRandomService {
-    void save(Document document);
+    void save(HttpServletRequest request);
 
 
 }

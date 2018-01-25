@@ -19,28 +19,19 @@ public class SequenceDAOImpl implements ISequenceDao {
 
     @Override
     public Long getNextSequenceId(String key) {
-        // получаем объект Sequence по наименованию коллекции
         Query query = new Query(Criteria.where("_id").is(key));
 
-        // увеличиваем поле sequence на единицу
         Update update = new Update();
         update.inc("sequence", 1);
 
-        // указываем опцию, что нужно возвращать измененный объект
         FindAndModifyOptions options = new FindAndModifyOptions();
         options.returnNew(true);
 
-        // немного магии :)
         Sequence sequence = mongoOperations.findAndModify(query, update, options, Sequence.class);
 
-        Long seq = sequence.getSequence();
-        String id = sequence.getId();
-
-        // if no sequence throws SequenceException
         if(sequence == null) {
             throw new SequenceException("Unable to get sequence for key: " + key);
         }
-
 
         return sequence.getSequence();
     }

@@ -3,10 +3,12 @@ package com.sokil.dao.impl;
 import com.sokil.dao.IRandomDAO;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Repository;
 
 @Repository("randomDAO")
+@Scope("prototype")
 public class RandomDAOImpl implements IRandomDAO {
     public static final String COLLECTION_NAME = "randomMaps";
 
@@ -15,6 +17,6 @@ public class RandomDAOImpl implements IRandomDAO {
 
     @Override
     public void create(Document document) {
-        mongoOperations.insert(document, COLLECTION_NAME);
+        mongoOperations.save(document, COLLECTION_NAME);
     }
 }
