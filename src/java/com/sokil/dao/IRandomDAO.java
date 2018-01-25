@@ -4,5 +4,9 @@ package com.sokil.dao;
 import org.bson.Document;
 
 public interface IRandomDAO {
-    void create(Document document);
+    void save(Document document);
+
+    Document findById(Long id);
+
+    void updateField(Long docId, String key, String value);
 }
