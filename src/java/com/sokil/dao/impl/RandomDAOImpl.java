@@ -41,6 +41,6 @@ public class RandomDAOImpl implements IRandomDAO {
         update.set(key, value);
         MongoOperations mongoOperations = applicationContext.getBean(MongoOperations.class);
         mongoOperations.updateFirst(query, update, COLLECTION_NAME);
-        log.debug("MongoTemplate" + mongoOperations);
+        log.debug("MongoTemplate " + mongoOperations);
     }
 }

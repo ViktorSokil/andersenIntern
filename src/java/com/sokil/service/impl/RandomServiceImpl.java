@@ -7,12 +7,12 @@ import com.sokil.service.IRandomService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -23,30 +23,35 @@ public class RandomServiceImpl implements IRandomService{
     @Autowired
     private ISequenceDao sequenceDao;
     @Autowired
-    RandomSaver randomSaver;
+    private RandomSaver randomSaver;
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Override
     public void save(HttpServletRequest request) {
         Long id = sequenceDao.getNextSequenceId("randomMaps");
+
         Document document = new Document();
         document.put("_id", id);
         randomDAO.save(document);
+
         Map<String, String[]> map = request.getParameterMap();
-        ExecutorService executorService = Executors.newFixedThreadPool(map.size());
+
+        taskExecutor.setCorePoolSize(map.size());
+
         randomSaver.setCount(new AtomicInteger(1));
         for (Map.Entry<String, String[]> pair: map.entrySet()){
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    if (findById(id) != null ){
-                        randomSaver.updateMultiThread(id, pair.getKey(), pair.getValue()[0]);
-                    }else {
-                        log.info("Document with _id = "+id+" doesn't exist");
-                    }
-                }
-            });
+
+            TaskSaver taskSaver = applicationContext.getBean(TaskSaver.class);
+            taskSaver.setDocId(id);
+            taskSaver.setKey(pair.getKey());
+            taskSaver.setValue(pair.getValue()[0]);
+
+            taskExecutor.submit(taskSaver);
         }
-        executorService.shutdown();
+        taskExecutor.shutdown();
     }
 
     @Override
