@@ -1,31 +1,27 @@
 package com.sokil.service.impl;
 
 import com.sokil.dao.IRandomDAO;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
+@Getter
+@Setter
 @Service("randomSaver")
 public class RandomSaver {
-    private static AtomicInteger at;
+    private AtomicInteger count;
 
     @Autowired
-    private ObjectFactory<IRandomDAO> prototypeFactory;
-
-    public static void setAt(AtomicInteger at) {
-        RandomSaver.at = at;
-    }
-
-    public static AtomicInteger getAt() {
-        return at;
-    }
+    private ApplicationContext applicationContext;
 
     public synchronized void updateMultiThread(Long docId, String key, String value) {
-        while (at.get() != Integer.valueOf(key)){
+        while (count.get() != Integer.valueOf(key)){
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -33,10 +29,10 @@ public class RandomSaver {
             }
         }
         log.debug("Thread "+Thread.currentThread().getName()+" Key - "+key);
-        IRandomDAO randomDAO = prototypeFactory.getObject();
+        IRandomDAO randomDAO = applicationContext.getBean(IRandomDAO.class);
         log.debug("Bean randomDAO " + randomDAO.toString());
         randomDAO.updateField(docId, key, value);
-        at.incrementAndGet();
+        count.incrementAndGet();
         notifyAll();
     }
 }

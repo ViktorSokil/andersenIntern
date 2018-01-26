@@ -23,7 +23,7 @@ public class RandomServiceImpl implements IRandomService{
     @Autowired
     private ISequenceDao sequenceDao;
     @Autowired
-    private RandomSaver randomSaver;
+    RandomSaver randomSaver;
 
     @Override
     public void save(HttpServletRequest request) {
@@ -33,7 +33,7 @@ public class RandomServiceImpl implements IRandomService{
         randomDAO.save(document);
         Map<String, String[]> map = request.getParameterMap();
         ExecutorService executorService = Executors.newFixedThreadPool(map.size());
-        randomSaver.setAt(new AtomicInteger(1));
+        randomSaver.setCount(new AtomicInteger(1));
         for (Map.Entry<String, String[]> pair: map.entrySet()){
             executorService.submit(new Runnable() {
                 @Override
