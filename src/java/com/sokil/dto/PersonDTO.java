@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -11,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @EqualsAndHashCode
 @ToString
 @Document(collection = PersonDTO.COLLECTION_NAME)
-public class PersonDTO {
+public class PersonDTO implements Serializable{
 	public static final String COLLECTION_NAME = "persons";
 	//id will be used for storing MongoDB _id
 	@Id

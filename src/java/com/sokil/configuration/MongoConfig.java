@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 @Configuration
-@ComponentScan(basePackages = "com.sokil")
 @PropertySource("classpath:mongo_db.properties")
 public class MongoConfig {
     @Value("${mongoDB.URL}")
