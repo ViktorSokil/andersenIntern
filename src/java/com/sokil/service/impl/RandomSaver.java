@@ -23,7 +23,10 @@ public class RandomSaver {
     public synchronized void updateMultiThread(Long docId, String key, String value) {
         while (count.get() != Integer.valueOf(key)){
             try {
+                log.debug("thread waiting - "+Thread.currentThread().getName());
+                log.debug("---------------------------------------------- ");
                 wait();
+                log.debug("Thread status - "+ Thread.currentThread().getState());
             } catch (InterruptedException e) {
                 log.error("RandomDAOImpl.updateField " + e.getMessage());
             }

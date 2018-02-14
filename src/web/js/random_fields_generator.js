@@ -1,6 +1,6 @@
     $(document).ready(function() {
         $ ("#button").click(function () {
-            var count = Math.floor((Math.random() * 5) + 1);
+            var count = Math.floor((Math.random() * 20) + 1);
             $(".field").remove();
             for (var i = 1; i <= count; i++) {
                 random(i);

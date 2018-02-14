@@ -28,7 +28,7 @@ public class HomeController {
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public String insertUser(@ModelAttribute("userDTO") UserDTO userDTO){
         userService.saveUser(parseToUser(userDTO));
-        return "/";
+        return "registration";
     }
 
     private User parseToUser(UserDTO userDTO){

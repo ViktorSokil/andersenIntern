@@ -8,6 +8,8 @@ import java.util.List;
 public interface IPersonServise {
     void create(PersonDTO p);
 
+    void save(PersonDTO p);
+
     PersonDTO readById(String id);
 
     void update(PersonDTO p);

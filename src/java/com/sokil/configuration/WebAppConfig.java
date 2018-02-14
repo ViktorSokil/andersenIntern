@@ -18,7 +18,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.sokil")
+@ComponentScan(basePackages = "com.sokil.controller")
 public class WebAppConfig extends WebMvcConfigurerAdapter{
 
     @Bean

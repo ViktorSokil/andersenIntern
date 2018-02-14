@@ -3,6 +3,7 @@ package com.sokil.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable{
     @Id
     @Column(name = "USER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

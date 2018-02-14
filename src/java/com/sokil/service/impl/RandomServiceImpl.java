@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -26,8 +29,10 @@ public class RandomServiceImpl implements IRandomService{
     private RandomSaver randomSaver;
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
-    private ThreadPoolTaskExecutor taskExecutor;
+
+    private ExecutorService taskExecutor;
+
+    private AtomicInteger count = new AtomicInteger(1);
 
     @Override
     public void save(HttpServletRequest request) {
@@ -39,9 +44,9 @@ public class RandomServiceImpl implements IRandomService{
 
         Map<String, String[]> map = request.getParameterMap();
 
-        taskExecutor.setCorePoolSize(map.size());
+        taskExecutor = Executors.newFixedThreadPool(map.size());
 
-        randomSaver.setCount(new AtomicInteger(1));
+        randomSaver.setCount(count);
         for (Map.Entry<String, String[]> pair: map.entrySet()){
 
             TaskSaver taskSaver = applicationContext.getBean(TaskSaver.class);

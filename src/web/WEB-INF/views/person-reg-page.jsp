@@ -15,16 +15,19 @@
 </head>
 <body>
 <div class="container">
-    <form:form action="personreg" method="post" modelAttribute="personDTO">
-        <form:hidden path="id"/>
+    <form:form action="personreg" method="post" commandName="personDTO">
+        <form:hidden id="id" path="id"/>
         <h1>Registration Form</h1>
-        Name:<form:input path="name"/><br/>
-        Address:<form:input path="address" /><br/>
-        <input type="submit" value="Register"/>
+        Name:<form:input id="name" path="name"/><br/>
+        Address:<form:input id="address" path="address" /><br/>
+        <input id="btn-save" type="submit" value="Register"/>
     </form:form>
 
     <div>
         <a href = "/allpersons">All Persons</a>
     </div>
 </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="../../js/person_page.js"></script>
 </body>

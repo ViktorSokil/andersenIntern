@@ -6,10 +6,7 @@ import com.sokil.service.IPersonServise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,8 +22,8 @@ public class PersonController {
     }
 
     @RequestMapping(value = "/personreg", method = RequestMethod.POST)
-    public String insertPerson(@ModelAttribute("personDTO") PersonDTO personDTO){
-        personServise.create(personDTO);
+    public String insertPerson(@RequestBody PersonDTO personDTO){
+        personServise.save(personDTO);
         return "person-reg-page";
     }
 

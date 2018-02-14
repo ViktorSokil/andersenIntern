@@ -3,6 +3,7 @@ package com.sokil.service.impl;
 import com.sokil.dao.IPersonDAO;
 import com.sokil.dao.ISequenceDao;
 import com.sokil.dto.PersonDTO;
+import com.sokil.massaging.MessagePublisher;
 import com.sokil.service.IPersonServise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,19 @@ public class PersonServiceImpl implements IPersonServise {
     private IPersonDAO personDAO;
     @Autowired
     private ISequenceDao sequenceDao;
+    @Autowired
+    private MessagePublisher messageSender;
 
     @Override
     public void create(PersonDTO p) {
         Long id = sequenceDao.getNextSequenceId(PersonDTO.COLLECTION_NAME);
         p.setId(id);
         personDAO.create(p);
+    }
+
+    @Override
+    public void save(PersonDTO p) {
+        messageSender.sendMessage(p);
     }
 
     @Override
